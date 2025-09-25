@@ -1,47 +1,43 @@
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Клас BasicDataOperationUsingSet реалізує операції з множиною HashSet для LocalDateTime.
+ * Клас BasicDataOperationUsingSet реалізує операції з множиною HashSet для short.
  * 
  * <p>Методи класу:</p>
  * <ul>
  *   <li>{@link #executeDataAnalysis()} - Запускає аналіз даних.</li>
- *   <li>{@link #performArraySorting()} - Упорядковує масив LocalDateTime.</li>
- *   <li>{@link #findInArray()} - Пошук значення в масиві LocalDateTime.</li>
+ *   <li>{@link #performArraySorting()} - Упорядковує масив short.</li>
+ *   <li>{@link #findInArray()} - Пошук значення в масиві short.</li>
  *   <li>{@link #locateMinMaxInArray()} - Знаходить граничні значення в масиві.</li>
- *   <li>{@link #findInSet()} - Пошук значення в множині LocalDateTime.</li>
+ *   <li>{@link #findInSet()} - Пошук значення в множині short.</li>
  *   <li>{@link #locateMinMaxInSet()} - Знаходить мінімальне і максимальне значення в множині.</li>
  *   <li>{@link #analyzeArrayAndSet()} - Аналізує елементи масиву та множини.</li>
  * </ul>
  */
 public class BasicDataOperationUsingSet {
-    LocalDateTime dateTimeValueToSearch;
-    LocalDateTime[] dateTimeArray;
-    Set<LocalDateTime> dateTimeSet = new HashSet<>();
+    Short shortValueToSearch;
+		Short[] shortArray;
+    TreeSet<Short> shortSet = new TreeSet<>();
 
     /**
      * Конструктор, який iнiцiалiзує об'єкт з готовими даними.
      * 
-     * @param dateTimeValueToSearch Значення для пошуку
-     * @param dateTimeArray Масив LocalDateTime
+     * @param shortValueToSearch Значення для пошуку
+     * @param shortArray Масив short
      */
-    BasicDataOperationUsingSet(LocalDateTime dateTimeValueToSearch, LocalDateTime[] dateTimeArray) {
-        this.dateTimeValueToSearch = dateTimeValueToSearch;
-        this.dateTimeArray = dateTimeArray;
-        this.dateTimeSet = new HashSet<>(Arrays.asList(dateTimeArray));
+    BasicDataOperationUsingSet(Short shortValueToSearch, Short[] shortArray) {
+        this.shortValueToSearch = shortValueToSearch;
+        this.shortArray = shortArray;
+        this.shortSet = new TreeSet<>(Arrays.asList(shortArray));
     }
     
     /**
      * Запускає комплексний аналіз даних з використанням множини HashSet.
      * 
-     * Метод завантажує дані, виконує операції з множиною та масивом LocalDateTime.
+     * Метод завантажує дані, виконує операції з множиною та масивом short.
      */
     public void executeDataAnalysis() {
-        // спочатку аналізуємо множину дати та часу
+        // спочатку аналізуємо множину short
         findInSet();
         locateMinMaxInSet();
         analyzeArrayAndSet();
@@ -56,99 +52,99 @@ public class BasicDataOperationUsingSet {
         locateMinMaxInArray();
 
         // зберігаємо відсортований масив до файлу
-        DataFileHandler.writeArrayToFile(dateTimeArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
+        DataFileHandler.writeArrayToFile(shortArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
     }
 
     /**
-     * Упорядковує масив об'єктів LocalDateTime за зростанням.
+     * Упорядковує масив об'єктів short за зростанням.
      * Фіксує та виводить тривалість операції сортування в наносекундах.
      */
     private void performArraySorting() {
         long timeStart = System.nanoTime();
 
-        Arrays.sort(dateTimeArray);
+        Arrays.sort(shortArray);
 
-        PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву дати i часу");
+        PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву short");
     }
 
     /**
-     * Здійснює пошук конкретного значення в масиві дати та часу.
+     * Здійснює пошук конкретного значення в масиві short.
      */
     private void findInArray() {
         long timeStart = System.nanoTime();
 
-        int position = Arrays.binarySearch(this.dateTimeArray, dateTimeValueToSearch);
+        int position = Arrays.binarySearch(this.shortArray, shortValueToSearch);
 
-        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi дати i часу");
+        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi short");
 
         if (position >= 0) {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' знайдено в масивi за позицією: " + position);
+            System.out.println("Елемент '" + shortValueToSearch + "' знайдено в масивi за позицією: " + position);
         } else {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' відсутній в масиві.");
+            System.out.println("Елемент '" + shortValueToSearch + "' відсутній в масиві.");
         }
     }
 
     /**
-     * Визначає найменше та найбільше значення в масиві LocalDateTime.
+     * Визначає найменше та найбільше значення в масиві short.
      */
     private void locateMinMaxInArray() {
-        if (dateTimeArray == null || dateTimeArray.length == 0) {
+        if (shortArray == null || shortArray.length == 0) {
             System.out.println("Масив є пустим або не ініціалізованим.");
             return;
         }
 
         long timeStart = System.nanoTime();
 
-        LocalDateTime minValue = dateTimeArray[0];
-        LocalDateTime maxValue = dateTimeArray[0];
+        Short minValue = shortArray[0];
+				Short maxValue = shortArray[0];
 
-        for (LocalDateTime currentDateTime : dateTimeArray) {
-            if (currentDateTime.isBefore(minValue)) {
-                minValue = currentDateTime;
+        for (Short currentValue : shortArray) {
+            if (currentValue < minValue) {
+                minValue = currentValue;
             }
-            if (currentDateTime.isAfter(maxValue)) {
-                maxValue = currentDateTime;
+            if (currentValue > maxValue) {
+                maxValue = currentValue;
             }
         }
 
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмальної i максимальної дати в масивi");
+        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
         System.out.println("Найменше значення в масивi: " + minValue);
         System.out.println("Найбільше значення в масивi: " + maxValue);
     }
 
     /**
-     * Здійснює пошук конкретного значення в множині дати та часу.
+     * Здійснює пошук конкретного значення в множині short.
      */
     private void findInSet() {
         long timeStart = System.nanoTime();
 
-        boolean elementExists = this.dateTimeSet.contains(dateTimeValueToSearch);
+        boolean elementExists = this.shortSet.contains(shortValueToSearch);
 
-        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в HashSet дати i часу");
+        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в HashSet short");
 
         if (elementExists) {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' знайдено в HashSet");
+            System.out.println("Елемент '" + shortValueToSearch + "' знайдено в HashSet");
         } else {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' відсутній в HashSet.");
+            System.out.println("Елемент '" + shortValueToSearch + "' відсутній в HashSet.");
         }
     }
 
     /**
-     * Визначає найменше та найбільше значення в множині LocalDateTime.
+     * Визначає найменше та найбільше значення в множині short.
      */
     private void locateMinMaxInSet() {
-        if (dateTimeSet == null || dateTimeSet.isEmpty()) {
+        if (shortSet == null || shortSet.isEmpty()) {
             System.out.println("HashSet є пустим або не ініціалізованим.");
             return;
         }
 
         long timeStart = System.nanoTime();
 
-        LocalDateTime minValue = Collections.min(dateTimeSet);
-        LocalDateTime maxValue = Collections.max(dateTimeSet);
+        Short minValue = Collections.min(shortSet);
+				Short maxValue = Collections.max(shortSet);
 
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмальної i максимальної дати в HashSet");
+        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в HashSet");
 
         System.out.println("Найменше значення в HashSet: " + minValue);
         System.out.println("Найбільше значення в HashSet: " + maxValue);
@@ -158,12 +154,12 @@ public class BasicDataOperationUsingSet {
      * Аналізує та порівнює елементи масиву та множини.
      */
     private void analyzeArrayAndSet() {
-        System.out.println("Кiлькiсть елементiв в масивi: " + dateTimeArray.length);
-        System.out.println("Кiлькiсть елементiв в HashSet: " + dateTimeSet.size());
+        System.out.println("Кiлькiсть елементiв в масивi: " + shortArray.length);
+        System.out.println("Кiлькiсть елементiв в HashSet: " + shortSet.size());
 
         boolean allElementsPresent = true;
-        for (LocalDateTime dateTimeElement : dateTimeArray) {
-            if (!dateTimeSet.contains(dateTimeElement)) {
+        for (Short shortElement : shortArray) {
+            if (!shortSet.contains(shortElement)) {
                 allElementsPresent = false;
                 break;
             }

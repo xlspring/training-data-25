@@ -1,11 +1,3 @@
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Queue;
-
 /**
  * Загальний клас BasicDataOperation координує роботу різних структур даних.
  * 
@@ -32,17 +24,17 @@ import java.util.Queue;
  * </pre>
  */
 public class BasicDataOperation {
-    static final String PATH_TO_DATA_FILE = "list/LocalDateTime.data";
+    static final String PATH_TO_DATA_FILE = "list/short.data";
 
-    LocalDateTime dateTimeValueToSearch;
-    LocalDateTime[] dateTimeArray;
+    Short shortValueToSearch;
+    Short[] shortArray;
 
     private static final String SEPARATOR = "\n" + "=".repeat(80) + "\n";
     private static final String USAGE_MESSAGE = """
         Використання: java BasicDataOperation <пошукове-значення>
                
         Приклад:
-          java BasicDataOperation "2025-01-02T20:42:25Z"
+          java BasicDataOperation "420"
         """;
 
     public static void main(String[] args) {
@@ -55,9 +47,9 @@ public class BasicDataOperation {
 
         // Валідація введеного значення дати
         try {
-            LocalDateTime.parse(searchValue, DateTimeFormatter.ISO_DATE_TIME);
+            Short.parseShort(searchValue);
         } catch (Exception e) {
-            System.out.println("Помилка: Невірний формат дати-часу. Використовуйте ISO формат (наприклад: 2024-03-16T00:12:38Z)");
+            System.out.println("Помилка: Невірний формат короткого числа (-32,768 - 32,767).");
             return;
         }
 
@@ -72,13 +64,13 @@ public class BasicDataOperation {
      */
     private void executeOperations(String[] args) {
         System.out.println(SEPARATOR);
-        System.out.println("🚀 РОЗПОЧАТО АНАЛІЗ ДАНИХ LocalDateTime 🚀");
+        System.out.println("🚀 РОЗПОЧАТО АНАЛІЗ ДАНИХ short 🚀");
         System.out.println("Пошуковий параметр: " + args[0]);
         System.out.println(SEPARATOR);
         
         // Підготовка даних та перевірка формату
-        dateTimeValueToSearch = LocalDateTime.parse(args[0], DateTimeFormatter.ISO_DATE_TIME);
-        dateTimeArray = DataFileHandler.loadArrayFromFile(PATH_TO_DATA_FILE);
+        shortValueToSearch = Short.parseShort(args[0]);
+        shortArray = DataFileHandler.loadArrayFromFile(PATH_TO_DATA_FILE);
         
         runAllOperations();
 
@@ -89,16 +81,15 @@ public class BasicDataOperation {
 
     /**
      * Запускає операції з колекцією List.
-     * 
-     * @param args Аргументи для передачі до класу
+     *
      */
     private void runListOperations() {
         System.out.println("📋 ОБРОБКА ДАНИХ З ВИКОРИСТАННЯМ LIST");
         System.out.println("-".repeat(50));
         
         try {
-            // Створення екземпляру класу з передаванням даних
-            BasicDataOperationUsingList listProcessor = new BasicDataOperationUsingList(dateTimeValueToSearch, dateTimeArray);
+            // Створення екземпляра класу з передаванням даних
+            BasicDataOperationUsingList listProcessor = new BasicDataOperationUsingList(shortValueToSearch, shortArray);
             listProcessor.executeDataOperations();
         } catch (Exception e) {
             System.out.println("❌ Помилка при роботі з List: " + e.getMessage());
@@ -108,16 +99,15 @@ public class BasicDataOperation {
 
     /**
      * Запускає операції з колекцією Queue.
-     * 
-     * @param args Аргументи для передачі до класу
+     *
      */
     private void runQueueOperations() {
         System.out.println("🔄 ОБРОБКА ДАНИХ З ВИКОРИСТАННЯМ QUEUE");
         System.out.println("-".repeat(50));
         
         try {
-            // Створення екземпляру класу з передаванням даних
-            BasicDataOperationUsingQueue queueProcessor = new BasicDataOperationUsingQueue(dateTimeValueToSearch, dateTimeArray);
+            // Створення екземпляра класу з передаванням даних
+            BasicDataOperationUsingQueue queueProcessor = new BasicDataOperationUsingQueue(shortValueToSearch, shortArray);
             queueProcessor.runDataProcessing();
         } catch (Exception e) {
             System.out.println("❌ Помилка при роботі з Queue: " + e.getMessage());
@@ -127,16 +117,15 @@ public class BasicDataOperation {
 
     /**
      * Запускає операції з колекцією Set.
-     * 
-     * @param args Аргументи для передачі до класу
+     *
      */
     private void runSetOperations() {
         System.out.println("🔍 ОБРОБКА ДАНИХ З ВИКОРИСТАННЯМ SET");
         System.out.println("-".repeat(50));
         
         try {
-            // Створення екземпляру класу з передаванням даних           
-            BasicDataOperationUsingSet setProcessor = new BasicDataOperationUsingSet(dateTimeValueToSearch, dateTimeArray);
+            // Створення екземпляра класу з передаванням даних
+            BasicDataOperationUsingSet setProcessor = new BasicDataOperationUsingSet(shortValueToSearch, shortArray);
             setProcessor.executeDataAnalysis();
         } catch (Exception e) {
             System.out.println("❌ Помилка при роботі з Set: " + e.getMessage());
@@ -146,8 +135,7 @@ public class BasicDataOperation {
 
     /**
      * Запускає операції з усіма типами колекцій для порівняння.
-     * 
-     * @param args Аргументи для передачі до класів
+     *
      */
     private void runAllOperations() {
         System.out.println("🎯 КОМПЛЕКСНИЙ АНАЛІЗ ВСІХ СТРУКТУР ДАНИХ");

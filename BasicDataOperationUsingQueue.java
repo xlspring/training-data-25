@@ -1,48 +1,46 @@
-import java.time.LocalDateTime;
-import java.util.Queue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.PriorityQueue;
 
 /**
- * Клас BasicDataOperationUsingQueue реалізує роботу з колекціями типу Queue для LocalDateTime.
+ * Клас BasicDataOperationUsingQueue реалізує роботу з колекціями типу Queue для short.
  * 
  * <p>Основні функції класу:</p>
  * <ul>
  *   <li>{@link #runDataProcessing()} - Запускає комплекс операцій з даними.</li>
- *   <li>{@link #performArraySorting()} - Упорядковує масив LocalDateTime.</li>
- *   <li>{@link #findInArray()} - Пошук значення в масиві LocalDateTime.</li>
+ *   <li>{@link #performArraySorting()} - Упорядковує масив short.</li>
+ *   <li>{@link #findInArray()} - Пошук значення в масиві short.</li>
  *   <li>{@link #locateMinMaxInArray()} - Знаходить мінімальне і максимальне значення в масиві.</li>
- *   <li>{@link #findInQueue()} - Пошук значення в черзі LocalDateTime.</li>
+ *   <li>{@link #findInQueue()} - Пошук значення в черзі short.</li>
  *   <li>{@link #locateMinMaxInQueue()} - Знаходить граничні значення в черзі.</li>
  *   <li>{@link #performQueueOperations()} - Виконує операції peek і poll з чергою.</li>
  * </ul>
  * 
  */
 public class BasicDataOperationUsingQueue {
-    private LocalDateTime dateTimeValueToSearch;
-    private LocalDateTime[] dateTimeArray;
-    private Queue<LocalDateTime> dateTimeQueue;
+    private Short shortValueToSearch;
+    private Short[] shortArray;
+    private PriorityQueue<Short> shortPriorityQueue;
 
     /**
      * Конструктор, який iнiцiалiзує об'єкт з готовими даними.
      * 
-     * @param dateTimeValueToSearch Значення для пошуку
-     * @param dateTimeArray Масив LocalDateTime
+     * @param shortValueToSearch Значення для пошуку
+     * @param shortArray Масив short
      */
-    BasicDataOperationUsingQueue(LocalDateTime dateTimeValueToSearch, LocalDateTime[] dateTimeArray) {
-        this.dateTimeValueToSearch = dateTimeValueToSearch;
-        this.dateTimeArray = dateTimeArray;
-        this.dateTimeQueue = new PriorityQueue<>(Arrays.asList(dateTimeArray));
+    BasicDataOperationUsingQueue(Short shortValueToSearch, Short[] shortArray) {
+        this.shortValueToSearch = shortValueToSearch;
+        this.shortArray = shortArray;
+        this.shortPriorityQueue = new PriorityQueue<>(Arrays.asList(shortArray));
     }
     
     /**
      * Запускає комплексну обробку даних з використанням черги.
      * 
-     * Метод завантажує дані, виконує операції з чергою та масивом LocalDateTime.
+     * Метод завантажує дані, виконує операції з чергою та масивом short.
      */
     public void runDataProcessing() {
-        // спочатку обробляємо чергу дати та часу
+        // спочатку обробляємо чергу short
         findInQueue();
         locateMinMaxInQueue();
         performQueueOperations();
@@ -57,45 +55,45 @@ public class BasicDataOperationUsingQueue {
         locateMinMaxInArray();
 
         // зберігаємо відсортований масив до файлу
-        DataFileHandler.writeArrayToFile(dateTimeArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
+        DataFileHandler.writeArrayToFile(shortArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
     }
 
     /**
-     * Сортує масив об'єктiв LocalDateTime та виводить початковий i вiдсортований масиви.
+     * Сортує масив об'єктiв short та виводить початковий i вiдсортований масиви.
      * Вимiрює та виводить час, витрачений на сортування масиву в наносекундах.
      */
     private void performArraySorting() {
-        // вимірюємо тривалість упорядкування масиву дати та часу
+        // вимірюємо тривалість упорядкування масиву short
         long timeStart = System.nanoTime();
 
-        Arrays.sort(dateTimeArray);
+        Arrays.sort(shortArray);
 
-        PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву дати i часу");
+        PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву значень");
     }
 
     /**
-     * Здійснює пошук конкретного значення в масиві дати та часу.
+     * Здійснює пошук конкретного значення в масиві short.
      */
     private void findInArray() {
         // відстежуємо час виконання пошуку в масиві
         long timeStart = System.nanoTime();
         
-        int position = Arrays.binarySearch(this.dateTimeArray, dateTimeValueToSearch);
+        int position = Arrays.binarySearch(this.shortArray, shortValueToSearch);
         
-        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi дати i часу");
+        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi short");
 
         if (position >= 0) {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' знайдено в масивi за позицією: " + position);
+            System.out.println("Елемент '" + shortValueToSearch + "' знайдено в масивi за позицією: " + position);
         } else {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' відсутній в масиві.");
+            System.out.println("Елемент '" + shortValueToSearch + "' відсутній в масиві.");
         }
     }
 
     /**
-     * Визначає найменше та найбільше значення в масиві LocalDateTime.
+     * Визначає найменше та найбільше значення в масиві short.
      */
     private void locateMinMaxInArray() {
-        if (dateTimeArray == null || dateTimeArray.length == 0) {
+        if (shortArray == null || shortArray.length == 0) {
             System.out.println("Масив є пустим або не ініціалізованим.");
             return;
         }
@@ -103,47 +101,47 @@ public class BasicDataOperationUsingQueue {
         // відстежуємо час на визначення граничних значень
         long timeStart = System.nanoTime();
 
-        LocalDateTime minValue = dateTimeArray[0];
-        LocalDateTime maxValue = dateTimeArray[0];
+        Short minValue = shortArray[0];
+				Short maxValue = shortArray[0];
 
-        for (LocalDateTime currentDateTime : dateTimeArray) {
-            if (currentDateTime.isBefore(minValue)) {
-                minValue = currentDateTime;
+        for (Short currentValue : shortArray) {
+            if (currentValue < minValue) {
+                minValue = currentValue;
             }
-            if (currentDateTime.isAfter(maxValue)) {
-                maxValue = currentDateTime;
+            if (currentValue > minValue) {
+                maxValue = currentValue;
             }
         }
 
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмальної i максимальної дати в масивi");
+        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
         System.out.println("Найменше значення в масивi: " + minValue);
         System.out.println("Найбільше значення в масивi: " + maxValue);
     }
 
     /**
-     * Здійснює пошук конкретного значення в черзі дати та часу.
+     * Здійснює пошук конкретного значення в черзі short.
      */
     private void findInQueue() {
         // вимірюємо час пошуку в черзі
         long timeStart = System.nanoTime();
 
-        boolean elementExists = this.dateTimeQueue.contains(dateTimeValueToSearch);
+        boolean elementExists = this.shortPriorityQueue.contains(shortValueToSearch);
 
-        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в Queue дати i часу");
+        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в Queue short");
 
         if (elementExists) {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' знайдено в Queue");
+            System.out.println("Елемент '" + shortValueToSearch + "' знайдено в Queue");
         } else {
-            System.out.println("Елемент '" + dateTimeValueToSearch + "' відсутній в Queue.");
+            System.out.println("Елемент '" + shortValueToSearch + "' відсутній в Queue.");
         }
     }
 
     /**
-     * Визначає найменше та найбільше значення в черзі LocalDateTime.
+     * Визначає найменше та найбільше значення в черзі short.
      */
     private void locateMinMaxInQueue() {
-        if (dateTimeQueue == null || dateTimeQueue.isEmpty()) {
+        if (shortPriorityQueue == null || shortPriorityQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
             return;
         }
@@ -151,31 +149,31 @@ public class BasicDataOperationUsingQueue {
         // відстежуємо час пошуку граничних значень
         long timeStart = System.nanoTime();
 
-        LocalDateTime minValue = Collections.min(dateTimeQueue);
-        LocalDateTime maxValue = Collections.max(dateTimeQueue);
+        Short minValue = Collections.min(shortPriorityQueue);
+				Short maxValue = Collections.max(shortPriorityQueue);
 
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмальної i максимальної дати в Queue");
+        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в Queue");
 
         System.out.println("Найменше значення в Queue: " + minValue);
         System.out.println("Найбільше значення в Queue: " + maxValue);
     }
 
     /**
-     * Виконує операції peek і poll з чергою LocalDateTime.
+     * Виконує операції peek і poll з чергою short.
      */
     private void performQueueOperations() {
-        if (dateTimeQueue == null || dateTimeQueue.isEmpty()) {
+        if (shortPriorityQueue == null || shortPriorityQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
             return;
         }
 
-        LocalDateTime headElement = dateTimeQueue.peek();
+        Short headElement = shortPriorityQueue.peek();
         System.out.println("Головний елемент черги (peek): " + headElement);
 
-        headElement = dateTimeQueue.poll();
+        headElement = shortPriorityQueue.poll();
         System.out.println("Видалений елемент черги (poll): " + headElement);
 
-        headElement = dateTimeQueue.peek();
+        headElement = shortPriorityQueue.peek();
         System.out.println("Новий головний елемент черги: " + headElement);
     }
 }
