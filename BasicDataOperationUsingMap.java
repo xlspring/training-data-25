@@ -393,7 +393,7 @@ public class BasicDataOperationUsingMap {
 		System.out.println("\n=== Пари ключ-значення в HashMap ===");
 
 		long timeStart = System.nanoTime();
-		for (Map.Entry<Cow, String> entry : hashmap.entrySet()) {
+		for (Map.Entry<Cow, String> entry : linkedHashmap.entrySet()) {
 			System.out.println("  " + entry.getKey() + " -> " + entry.getValue());
 		}
 
