@@ -1,4 +1,6 @@
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Клас BasicDataOperationUsingList реалізує операції з колекціями типу ArrayList для даних short.
@@ -67,7 +69,9 @@ public class BasicDataOperationUsingList {
     void performArraySorting() {
         long timeStart = System.nanoTime();
 
-        Arrays.sort(shortArray);
+        shortArray = Arrays.stream(shortArray)
+            .sorted()
+            .toArray(Short[]::new);
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву short");
     }
@@ -78,7 +82,10 @@ public class BasicDataOperationUsingList {
     void findInArray() {
         long timeStart = System.nanoTime();
 
-        int position = Arrays.binarySearch(this.shortArray, shortValueToSearch);
+        int position = IntStream.range(0, shortArray.length)
+            .filter(i -> shortValueToSearch.equals(shortArray[i]))
+            .findFirst()
+            .orElse(-1);
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi short");
 
@@ -100,17 +107,13 @@ public class BasicDataOperationUsingList {
 
         long timeStart = System.nanoTime();
 
-        Short minValue = shortArray[0];
-				Short maxValue = shortArray[0];
+        short minValue = Arrays.stream(shortArray)
+            .min(Short::compareTo)
+            .orElse(null);
 
-        for (Short currentValue : shortArray) {
-            if (currentValue < minValue) {
-                minValue = currentValue;
-            }
-            if (currentValue > maxValue) {
-                maxValue = currentValue;
-            }
-        }
+        short maxValue = Arrays.stream(shortArray)
+            .max(Short::compareTo)
+            .orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
@@ -124,7 +127,10 @@ public class BasicDataOperationUsingList {
     void findInList() {
         long timeStart = System.nanoTime();
 
-        int position = Collections.binarySearch(this.shortList, shortValueToSearch);
+        int position = IntStream.range(0, shortList.size())
+            .filter(i -> shortValueToSearch.equals(shortList.get(i)))
+            .findFirst()
+            .orElse(-1);
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в List short");
 
@@ -146,8 +152,13 @@ public class BasicDataOperationUsingList {
 
         long timeStart = System.nanoTime();
 
-        Short minValue = Collections.min(shortList);
-				Short maxValue = Collections.max(shortList);
+        short minValue = shortList.stream()
+            .min(Short::compareTo)
+            .orElse(null);
+
+        short maxValue = shortList.stream()
+            .max(Short::compareTo)
+            .orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в List");
 
@@ -162,8 +173,10 @@ public class BasicDataOperationUsingList {
     void sortList() {
         long timeStart = System.nanoTime();
 
-        Collections.sort(shortList);
+        shortList = shortList.stream()
+								.sorted()
+								.collect(Collectors.toCollection(Vector::new));
 
-        PerformanceTracker.displayOperationTime(timeStart, "упорядкування ArrayList short");
+			PerformanceTracker.displayOperationTime(timeStart, "упорядкування ArrayList short");
     }
 }

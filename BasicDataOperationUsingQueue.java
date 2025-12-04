@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.PriorityQueue;
+import java.util.stream.IntStream;
 
 /**
  * Клас BasicDataOperationUsingQueue реалізує роботу з колекціями типу Queue для short.
@@ -66,7 +67,9 @@ public class BasicDataOperationUsingQueue {
         // вимірюємо тривалість упорядкування масиву short
         long timeStart = System.nanoTime();
 
-        Arrays.sort(shortArray);
+        shortArray = Arrays.stream(shortArray)
+            .sorted()
+            .toArray(Short[]::new);
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву значень");
     }
@@ -77,8 +80,11 @@ public class BasicDataOperationUsingQueue {
     private void findInArray() {
         // відстежуємо час виконання пошуку в масиві
         long timeStart = System.nanoTime();
-        
-        int position = Arrays.binarySearch(this.shortArray, shortValueToSearch);
+
+				int position = IntStream.range(0, shortArray.length)
+					.filter(i -> shortValueToSearch.equals(shortArray[i]))
+					.findFirst()
+					.orElse(-1);
         
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi short");
 
@@ -101,17 +107,13 @@ public class BasicDataOperationUsingQueue {
         // відстежуємо час на визначення граничних значень
         long timeStart = System.nanoTime();
 
-        Short minValue = shortArray[0];
-				Short maxValue = shortArray[0];
+				Short minValue = Arrays.stream(shortArray)
+						.min(Short::compareTo)
+						.orElse(null);
 
-        for (Short currentValue : shortArray) {
-            if (currentValue < minValue) {
-                minValue = currentValue;
-            }
-            if (currentValue > minValue) {
-                maxValue = currentValue;
-            }
-        }
+				Short maxValue = Arrays.stream(shortArray)
+						.max(Short::compareTo)
+						.orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
@@ -149,8 +151,13 @@ public class BasicDataOperationUsingQueue {
         // відстежуємо час пошуку граничних значень
         long timeStart = System.nanoTime();
 
-        Short minValue = Collections.min(shortPriorityQueue);
-				Short maxValue = Collections.max(shortPriorityQueue);
+			Short minValue = shortPriorityQueue.stream()
+					.min(Short::compareTo)
+					.orElse(null);
+
+			Short maxValue = shortPriorityQueue.stream()
+					.max(Short::compareTo)
+					.orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в Queue");
 

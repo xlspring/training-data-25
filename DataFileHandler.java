@@ -3,6 +3,8 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Клас DataFileHandler управляє роботою з файлами даних short.
@@ -15,27 +17,15 @@ public class DataFileHandler {
      * @return Масив об'єктів short.
      */
     public static Short[] loadArrayFromFile(String filePath) {
-        Short[] temporaryArray = new Short[1000];
-        int currentIndex = 0;
-
         try (BufferedReader fileReader = new BufferedReader(new FileReader(filePath))) {
-            String currentLine;
-            while ((currentLine = fileReader.readLine()) != null) {
-                // Видаляємо можливі невидимі символи та BOM
-                currentLine = currentLine.trim().replaceAll("^\\uFEFF", "");
-                if (!currentLine.isEmpty()) {
-                    short parsedValue = Short.parseShort(currentLine);
-                    temporaryArray[currentIndex++] = parsedValue;
-                }
-            }
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
-
-        Short[] resultArray = new Short[currentIndex];
-        System.arraycopy(temporaryArray, 0, resultArray, 0, currentIndex);
-
-        return resultArray;
+					return fileReader.lines()
+							.map(current -> current.trim().replaceAll("^\\uFEFF", ""))
+							.filter(current -> !current.isEmpty())
+							.map(Short::parseShort)
+							.toArray(Short[]::new);
+				} catch (IOException exception) {
+					throw new RuntimeException("Error reading data from the file: " + filePath, exception);
+				}
     }
 
     /**
@@ -45,13 +35,14 @@ public class DataFileHandler {
      * @param filePath Шлях до файлу для збереження.
      */
     public static void writeArrayToFile(Short[] shortArray, String filePath) {
-        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath))) {
-            for (Short shortElement : shortArray) {
-                fileWriter.write(Short.toString(shortElement));
-                fileWriter.newLine();
-            }
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
+			try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath))) {
+				String content = Arrays.stream(shortArray)
+						.map(String::valueOf)
+						.collect(Collectors.joining(System.lineSeparator()));
+
+				fileWriter.write(content);
+			} catch (IOException exception) {
+				throw new RuntimeException("Error writing data to the file: " + filePath, exception);
+			}
     }
 }

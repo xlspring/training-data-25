@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * Клас BasicDataOperationUsingSet реалізує операції з множиною HashSet для short.
@@ -62,7 +63,9 @@ public class BasicDataOperationUsingSet {
     private void performArraySorting() {
         long timeStart = System.nanoTime();
 
-        Arrays.sort(shortArray);
+				shortArray = Arrays.stream(shortArray)
+						.sorted()
+						.toArray(Short[]::new);
 
         PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву short");
     }
@@ -73,7 +76,10 @@ public class BasicDataOperationUsingSet {
     private void findInArray() {
         long timeStart = System.nanoTime();
 
-        int position = Arrays.binarySearch(this.shortArray, shortValueToSearch);
+        int position = IntStream.range(0, shortArray.length)
+						.filter(i -> shortValueToSearch.equals(shortArray[i]))
+						.findFirst()
+						.orElse(-1);
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi short");
 
@@ -95,17 +101,13 @@ public class BasicDataOperationUsingSet {
 
         long timeStart = System.nanoTime();
 
-        Short minValue = shortArray[0];
-				Short maxValue = shortArray[0];
+				Short minValue = Arrays.stream(shortArray)
+						.min(Short::compareTo)
+						.orElse(null);
 
-        for (Short currentValue : shortArray) {
-            if (currentValue < minValue) {
-                minValue = currentValue;
-            }
-            if (currentValue > maxValue) {
-                maxValue = currentValue;
-            }
-        }
+				Short maxValue = Arrays.stream(shortArray)
+						.max(Short::compareTo)
+						.orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
 
@@ -119,7 +121,8 @@ public class BasicDataOperationUsingSet {
     private void findInSet() {
         long timeStart = System.nanoTime();
 
-        boolean elementExists = this.shortSet.contains(shortValueToSearch);
+        boolean elementExists = shortSet.stream()
+            .anyMatch(shortVal -> shortVal.equals(shortValueToSearch));
 
         PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в HashSet short");
 
@@ -141,8 +144,13 @@ public class BasicDataOperationUsingSet {
 
         long timeStart = System.nanoTime();
 
-        Short minValue = Collections.min(shortSet);
-				Short maxValue = Collections.max(shortSet);
+        Short minValue = shortSet.stream()
+            .min(Short::compareTo)
+            .orElse(null);
+
+				Short maxValue = shortSet.stream()
+						.max(Short::compareTo)
+						.orElse(null);
 
         PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в HashSet");
 
@@ -157,13 +165,8 @@ public class BasicDataOperationUsingSet {
         System.out.println("Кiлькiсть елементiв в масивi: " + shortArray.length);
         System.out.println("Кiлькiсть елементiв в HashSet: " + shortSet.size());
 
-        boolean allElementsPresent = true;
-        for (Short shortElement : shortArray) {
-            if (!shortSet.contains(shortElement)) {
-                allElementsPresent = false;
-                break;
-            }
-        }
+        boolean allElementsPresent = Arrays.stream(shortArray)
+						.allMatch(shortSet::contains);
 
         if (allElementsPresent) {
             System.out.println("Всi елементи масиву наявні в HashSet.");
