@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.stream.IntStream;
 
@@ -19,7 +18,12 @@ import java.util.stream.IntStream;
  * 
  */
 public class BasicDataOperationUsingQueue {
-    private Short shortValueToSearch;
+    /**
+     * Конфігурація для операцій з чергою.
+     */
+    public record QueueConfig(Short valueToSearch, Short[] array) { }
+
+    private final QueueConfig config;
     private Short[] shortArray;
     private PriorityQueue<Short> shortPriorityQueue;
 
@@ -30,8 +34,8 @@ public class BasicDataOperationUsingQueue {
      * @param shortArray Масив short
      */
     BasicDataOperationUsingQueue(Short shortValueToSearch, Short[] shortArray) {
-        this.shortValueToSearch = shortValueToSearch;
-        this.shortArray = shortArray;
+        this.config = new QueueConfig(shortValueToSearch, shortArray.clone());
+        this.shortArray = shortArray.clone();
         this.shortPriorityQueue = new PriorityQueue<>(Arrays.asList(shortArray));
     }
     
@@ -42,18 +46,18 @@ public class BasicDataOperationUsingQueue {
      */
     public void runDataProcessing() {
         // спочатку обробляємо чергу short
-        findInQueue();
-        locateMinMaxInQueue();
-        performQueueOperations();
+        PerformanceTracker.benchmark(this::findInQueue, "пошук елемента в Queue short").display();
+        PerformanceTracker.benchmark(this::locateMinMaxInQueue, "визначення мін/макс в Queue").display();
+        performQueueOperationsBenchmark();
 
         // потім працюємо з масивом
-        findInArray();
-        locateMinMaxInArray();
+        PerformanceTracker.benchmark(this::findInArray, "пошук елемента в масивi short").display();
+        PerformanceTracker.benchmark(this::locateMinMaxInArray, "визначення мін/макс в масиві").display();
 
-        performArraySorting();
+        PerformanceTracker.benchmark(this::performArraySorting, "упорядкування масиву значень").display();
 
-        findInArray();
-        locateMinMaxInArray();
+        PerformanceTracker.benchmark(this::findInArray, "пошук елемента в масивi short (після сортування)").display();
+        PerformanceTracker.benchmark(this::locateMinMaxInArray, "визначення мін/макс в масиві (після сортування)").display();
 
         // зберігаємо відсортований масив до файлу
         DataFileHandler.writeArrayToFile(shortArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
@@ -61,38 +65,21 @@ public class BasicDataOperationUsingQueue {
 
     /**
      * Сортує масив об'єктiв short та виводить початковий i вiдсортований масиви.
-     * Вимiрює та виводить час, витрачений на сортування масиву в наносекундах.
      */
     private void performArraySorting() {
-        // вимірюємо тривалість упорядкування масиву short
-        long timeStart = System.nanoTime();
-
         shortArray = Arrays.stream(shortArray)
             .sorted()
             .toArray(Short[]::new);
-
-        PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву значень");
     }
 
     /**
      * Здійснює пошук конкретного значення в масиві short.
      */
     private void findInArray() {
-        // відстежуємо час виконання пошуку в масиві
-        long timeStart = System.nanoTime();
-
-				int position = IntStream.range(0, shortArray.length)
-					.filter(i -> shortValueToSearch.equals(shortArray[i]))
-					.findFirst()
-					.orElse(-1);
-        
-        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi short");
-
-        if (position >= 0) {
-            System.out.println("Елемент '" + shortValueToSearch + "' знайдено в масивi за позицією: " + position);
-        } else {
-            System.out.println("Елемент '" + shortValueToSearch + "' відсутній в масиві.");
-        }
+        int position = IntStream.range(0, shortArray.length)
+            .filter(i -> config.valueToSearch().equals(shortArray[i]))
+            .findFirst()
+            .orElse(-1);
     }
 
     /**
@@ -100,43 +87,23 @@ public class BasicDataOperationUsingQueue {
      */
     private void locateMinMaxInArray() {
         if (shortArray == null || shortArray.length == 0) {
-            System.out.println("Масив є пустим або не ініціалізованим.");
             return;
         }
 
-        // відстежуємо час на визначення граничних значень
-        long timeStart = System.nanoTime();
+        Short minValue = Arrays.stream(shortArray)
+            .min(Short::compareTo)
+            .orElse(null);
 
-				Short minValue = Arrays.stream(shortArray)
-						.min(Short::compareTo)
-						.orElse(null);
-
-				Short maxValue = Arrays.stream(shortArray)
-						.max(Short::compareTo)
-						.orElse(null);
-
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
-
-        System.out.println("Найменше значення в масивi: " + minValue);
-        System.out.println("Найбільше значення в масивi: " + maxValue);
+        Short maxValue = Arrays.stream(shortArray)
+            .max(Short::compareTo)
+            .orElse(null);
     }
 
     /**
      * Здійснює пошук конкретного значення в черзі short.
      */
     private void findInQueue() {
-        // вимірюємо час пошуку в черзі
-        long timeStart = System.nanoTime();
-
-        boolean elementExists = this.shortPriorityQueue.contains(shortValueToSearch);
-
-        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в Queue short");
-
-        if (elementExists) {
-            System.out.println("Елемент '" + shortValueToSearch + "' знайдено в Queue");
-        } else {
-            System.out.println("Елемент '" + shortValueToSearch + "' відсутній в Queue.");
-        }
+        boolean elementExists = this.shortPriorityQueue.contains(config.valueToSearch());
     }
 
     /**
@@ -144,36 +111,34 @@ public class BasicDataOperationUsingQueue {
      */
     private void locateMinMaxInQueue() {
         if (shortPriorityQueue == null || shortPriorityQueue.isEmpty()) {
-            System.out.println("Черга є пустою або не ініціалізованою.");
             return;
         }
 
-        // відстежуємо час пошуку граничних значень
-        long timeStart = System.nanoTime();
+        Short minValue = shortPriorityQueue.stream()
+            .min(Short::compareTo)
+            .orElse(null);
 
-			Short minValue = shortPriorityQueue.stream()
-					.min(Short::compareTo)
-					.orElse(null);
-
-			Short maxValue = shortPriorityQueue.stream()
-					.max(Short::compareTo)
-					.orElse(null);
-
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в Queue");
-
-        System.out.println("Найменше значення в Queue: " + minValue);
-        System.out.println("Найбільше значення в Queue: " + maxValue);
+        Short maxValue = shortPriorityQueue.stream()
+            .max(Short::compareTo)
+            .orElse(null);
     }
 
     /**
-     * Виконує операції peek і poll з чергою short.
+     * Виконує бенчмарк операцій peek і poll з чергою short.
      */
-    private void performQueueOperations() {
+    private void performQueueOperationsBenchmark() {
         if (shortPriorityQueue == null || shortPriorityQueue.isEmpty()) {
             System.out.println("Черга є пустою або не ініціалізованою.");
             return;
         }
 
+        // Бенчмарк peek
+        PerformanceTracker.benchmark(() -> {
+            Short headElement = shortPriorityQueue.peek();
+        }, "операція peek в Queue").display();
+
+        // Для poll потрібно відновлювати чергу кожну ітерацію
+        System.out.println("\n--- Одноразові операції poll ---");
         Short headElement = shortPriorityQueue.peek();
         System.out.println("Головний елемент черги (peek): " + headElement);
 

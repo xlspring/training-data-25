@@ -17,7 +17,12 @@ import java.util.stream.IntStream;
  * </ul>
  */
 public class BasicDataOperationUsingList {
-    private Short shortValueToSearch;
+    /**
+     * Конфігурація для операцій з даними.
+     */
+    public record ListConfig(Short valueToSearch, Short[] array) { }
+
+    private final ListConfig config;
     private Short[] shortArray;
     private Vector<Short> shortList;
 
@@ -28,8 +33,8 @@ public class BasicDataOperationUsingList {
      * @param shortArray Масив short
      */
     BasicDataOperationUsingList(Short shortValueToSearch, Short[] shortArray) {
-        this.shortValueToSearch = shortValueToSearch;
-        this.shortArray = shortArray;
+        this.config = new ListConfig(shortValueToSearch, shortArray.clone());
+        this.shortArray = shortArray.clone();
         this.shortList = new Vector<>(Arrays.asList(shortArray));
     }
     
@@ -41,22 +46,22 @@ public class BasicDataOperationUsingList {
      */
     public void executeDataOperations() {
         // спочатку працюємо з колекцією List
-        findInList();
-        locateMinMaxInList();
+        PerformanceTracker.benchmark(this::findInList, "пошук елемента в List short").display();
+        PerformanceTracker.benchmark(this::locateMinMaxInList, "визначення мін/макс в List").display();
         
-        sortList();
+        PerformanceTracker.benchmark(this::sortList, "упорядкування ArrayList short").display();
         
-        findInList();
-        locateMinMaxInList();
+        PerformanceTracker.benchmark(this::findInList, "пошук елемента в List short (після сортування)").display();
+        PerformanceTracker.benchmark(this::locateMinMaxInList, "визначення мін/макс в List (після сортування)").display();
 
         // потім обробляємо масив дати та часу
-        findInArray();
-        locateMinMaxInArray();
+        PerformanceTracker.benchmark(this::findInArray, "пошук елемента в масивi short").display();
+        PerformanceTracker.benchmark(this::locateMinMaxInArray, "визначення мін/макс в масиві").display();
 
-        performArraySorting();
+        PerformanceTracker.benchmark(this::performArraySorting, "упорядкування масиву short").display();
         
-        findInArray();
-        locateMinMaxInArray();
+        PerformanceTracker.benchmark(this::findInArray, "пошук елемента в масивi short (після сортування)").display();
+        PerformanceTracker.benchmark(this::locateMinMaxInArray, "визначення мін/макс в масиві (після сортування)").display();
 
         // зберігаємо відсортований масив до окремого файлу
         DataFileHandler.writeArrayToFile(shortArray, BasicDataOperation.PATH_TO_DATA_FILE + ".sorted");
@@ -64,36 +69,21 @@ public class BasicDataOperationUsingList {
 
     /**
      * Упорядковує масив об'єктів short за зростанням.
-     * Фіксує та виводить тривалість операції сортування в наносекундах.
      */
     void performArraySorting() {
-        long timeStart = System.nanoTime();
-
         shortArray = Arrays.stream(shortArray)
             .sorted()
             .toArray(Short[]::new);
-
-        PerformanceTracker.displayOperationTime(timeStart, "упорядкування масиву short");
     }
 
     /**
      * Здійснює пошук конкретного значення в масиві дати та часу.
      */
     void findInArray() {
-        long timeStart = System.nanoTime();
-
         int position = IntStream.range(0, shortArray.length)
-            .filter(i -> shortValueToSearch.equals(shortArray[i]))
+            .filter(i -> config.valueToSearch().equals(shortArray[i]))
             .findFirst()
             .orElse(-1);
-
-        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в масивi short");
-
-        if (position >= 0) {
-            System.out.println("Елемент '" + shortValueToSearch + "' знайдено в масивi за позицією: " + position);
-        } else {
-            System.out.println("Елемент '" + shortValueToSearch + "' відсутній в масиві.");
-        }
     }
 
     /**
@@ -101,44 +91,26 @@ public class BasicDataOperationUsingList {
      */
     void locateMinMaxInArray() {
         if (shortArray == null || shortArray.length == 0) {
-            System.out.println("Масив є пустим або не ініціалізованим.");
             return;
         }
 
-        long timeStart = System.nanoTime();
-
-        short minValue = Arrays.stream(shortArray)
+        Short minValue = Arrays.stream(shortArray)
             .min(Short::compareTo)
             .orElse(null);
 
-        short maxValue = Arrays.stream(shortArray)
+        Short maxValue = Arrays.stream(shortArray)
             .max(Short::compareTo)
             .orElse(null);
-
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в масивi");
-
-        System.out.println("Найменше значення в масивi: " + minValue);
-        System.out.println("Найбільше значення в масивi: " + maxValue);
     }
 
     /**
      * Шукає конкретне значення дати та часу в колекції ArrayList.
      */
     void findInList() {
-        long timeStart = System.nanoTime();
-
         int position = IntStream.range(0, shortList.size())
-            .filter(i -> shortValueToSearch.equals(shortList.get(i)))
+            .filter(i -> config.valueToSearch().equals(shortList.get(i)))
             .findFirst()
             .orElse(-1);
-
-        PerformanceTracker.displayOperationTime(timeStart, "пошук елемента в List short");
-
-        if (position >= 0) {
-            System.out.println("Елемент '" + shortValueToSearch + "' знайдено в ArrayList за позицією: " + position);
-        } else {
-            System.out.println("Елемент '" + shortValueToSearch + "' відсутній в ArrayList.");
-        }
     }
 
     /**
@@ -146,37 +118,24 @@ public class BasicDataOperationUsingList {
      */
     void locateMinMaxInList() {
         if (shortList == null || shortList.isEmpty()) {
-            System.out.println("Колекція ArrayList є пустою або не ініціалізованою.");
             return;
         }
 
-        long timeStart = System.nanoTime();
-
-        short minValue = shortList.stream()
+        Short minValue = shortList.stream()
             .min(Short::compareTo)
             .orElse(null);
 
-        short maxValue = shortList.stream()
+        Short maxValue = shortList.stream()
             .max(Short::compareTo)
             .orElse(null);
-
-        PerformanceTracker.displayOperationTime(timeStart, "визначення мiнiмального i максимального значення в List");
-
-        System.out.println("Найменше значення в List: " + minValue);
-        System.out.println("Найбільше значення в List: " + maxValue);
     }
 
     /**
      * Упорядковує колекцію List з об'єктами short за зростанням.
-     * Відстежує та виводить час виконання операції сортування.
      */
     void sortList() {
-        long timeStart = System.nanoTime();
-
         shortList = shortList.stream()
-								.sorted()
-								.collect(Collectors.toCollection(Vector::new));
-
-			PerformanceTracker.displayOperationTime(timeStart, "упорядкування ArrayList short");
+            .sorted()
+            .collect(Collectors.toCollection(Vector::new));
     }
 }
